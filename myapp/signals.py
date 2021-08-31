@@ -6,6 +6,6 @@ from .models import Member
 @receiver(pre_save, sender=Member)
 def create_version(sender, instance, **kwargs):
     print('me hun signal')
-    member_qs = Member.objects.filter(id=instance.id).first
-    if member_qs and member_qs.job_poistion != instance.job_position:
-        instance.positionversion_set.create(job_position=member_qs[0].job_position)
+    member_qs = Member.objects.filter(id=instance.id).first()
+    if member_qs and member_qs.job_position != instance.job_position:
+        instance.positionversion_set.create(job_position=member_qs.job_position)
