@@ -1,0 +1,25 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h3>Welcome</h3>
+
+    {% if user.member %}
+    <h1 class="mt-4">Confirm Connections</h1>
+    <table class="table">
+        <tr>
+            <th>Company</th>
+            <th>Title</th>
+        </tr>
+        {% for job in jobs %}
+        <tr>
+            <td>{{job.company}}</td>
+            <td>{{job.title}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+</div>
+
+{% endblock content %}
