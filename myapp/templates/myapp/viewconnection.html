@@ -1,0 +1,17 @@
+{% extends 'myapp/base.html' %}
+{% block content %} 
+{% load crispy_forms_tags %} 
+<!--View Connection--> 
+<div class="container py-5">
+    <h1>Confirm Connections</h1>
+    <table class="table">
+        {% for connection in connection_list %}
+        <tr>
+            <td>{{connection.sender.first_name}}</td>
+            <td>{{connection.sender.last_name}}</td>
+            <td><a href="connected/{{connection.sender.id}}">Accept</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock content %}
