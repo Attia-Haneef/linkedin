@@ -132,16 +132,8 @@ class ConnectionConfirmView(View):
         }
         return render(request, 'myapp/viewconnection.html', context)
 
-    # def post(self, request):
-    #     form = ViewConnections(request.POST, instance=request.user.member)
-    #     if form.is_valid():
-    #         form.save()
-    #         messages.success(request, f'Updated {request.user.member} Connections successfully')
-    #         return redirect('myapp:homepage')
-    #     return render(request, 'myapp/viewconnection.html', context={'form':form})
-
 def connect(request, connection_id=id):
-    connected = Connection.objects.filter(sender_id = connection_id, receiver_id = request.user.member)
+    connected = Connection.objects.filter(sender_id=connection_id, receiver_id=request.user.member)
     connected.update(status='Connected')
     return redirect('myapp:homepage')
 
