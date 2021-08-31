@@ -13,17 +13,5 @@
         </tr>
         {% endfor %}
     </table>
-    <!-- <form method="post">
-        {% csrf_token %}
-        <ul>
-            {% for con in connection_list.objects.all %}
-                <li><a href="{% url 'shopping:detail' supermart_list.id %}">{{ choice.name }}</a></li>
-                
-            {% endfor %}
-        </ul>
-
-        {{ form|crispy }}                    
-		<button class="btn btn-primary" type="submit">Accept</button>
-    </form> -->
 </div>
 {% endblock content %}
