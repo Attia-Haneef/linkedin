@@ -1,12 +1,8 @@
 {% extends 'myapp/base.html' %}
-
 {% block content %}
-
 <div class="container mt-4">
-    <h3>Welcome</h3>
-
     {% if user.member %}
-    <h1 class="mt-4">Confirm Connections</h1>
+    <h1 class="mt-4">Suggested jobs</h1>
     <table class="table">
         <tr>
             <th>Company</th>
@@ -21,5 +17,4 @@
     </table>
     {% endif %}
 </div>
-
 {% endblock content %}

@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.forms import ModelForm
-from .models import Company, Connection, Education, Endorsment, Job, Member, MemberEducation
+from .models import Company, Connection, Endorsment, Job, Member, MemberEducation
 
 
 class NewUserForm(UserCreationForm):
@@ -43,6 +43,7 @@ class AddMemberForm(ModelForm):
             'join_date': DateInput(),
             'birth_date': DateInput()
          }
+
 
 class AddCompanyForm(ModelForm):
     class Meta:
@@ -93,7 +94,11 @@ class MakeConnections(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if 'instance' in kwargs:
-            self.fields['connections'].queryset = Member.objects.exclude(id=kwargs['instance'].id)
+            q1 = Member.objects.exclude(id=kwargs['instance'].id) 
+            q1 = q1.exclude(id__in=kwargs['instance'].receivers.values_list('sender_id', flat=True)) 
+            q1 = q1.exclude(id__in=kwargs['instance'].senders.filter(status='Connected').values_list('receiver_id', flat=True)) 
+            self.fields['connections'].queryset = q1
+
 
 class ViewConnections(ModelForm):
     class Meta:
@@ -104,10 +109,18 @@ class ViewConnections(ModelForm):
 class AddEndorsementForm(ModelForm):
     class Meta:
         model = Endorsment
-        exclude = ('endorsed_by',)
+        fields = ('skill',)
     
     def __init__(self, *args, **kwargs):
-        member_obj = kwargs.pop('member', None)
+        member_id = kwargs.pop('member_id', None)
+        endorser = kwargs.pop('endorser', None)
         super().__init__(*args, **kwargs)
-        if member_obj:
-            self.fields['member'].queryset = member_obj.connections.filter(receiver__status='Connected')
+        if member_id and endorser:
+            member = Member.objects.get(id=member_id)
+            self.fields['skill'].queryset = member.skills.exclude(id__in=endorser.endorsed_skills.values_list('skill_id', flat=True))
+
+
+class ConnectionViewForm(ModelForm):
+    class Meta:
+        model = Member
+        fields = ('connections',)

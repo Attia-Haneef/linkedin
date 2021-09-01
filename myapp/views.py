@@ -1,12 +1,12 @@
-import myapp
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
-from myapp.forms import NewUserForm, LoginForm
+from myapp.forms import ConnectionViewForm, NewUserForm, LoginForm
 from django.contrib.auth import authenticate, login as login_user, logout as logout_user
 from django.contrib import messages
 from django.views.generic import View, CreateView
-from myapp.models import Member, Company, Connection, Job
-from myapp.forms import AddMemberForm, AddCompanyForm, MemberSkillForm, AddJobForm, AddEducationForm, MakeConnections, ViewConnections, AddEndorsementForm
+from myapp.models import Member,  Connection, Job
+from django.db.models import Q
+from myapp.forms import AddMemberForm, AddCompanyForm, MemberSkillForm, AddJobForm, AddEducationForm, MakeConnections, ViewConnections, AddEndorsementForm, ConnectionViewForm
 
 
 def register_request(request):
@@ -69,13 +69,19 @@ class CompanyCreateView(CreateView):
 
 class HomeView(View):
     def get(self, request):
-        jobs = []
-        member_skills_set = set(request.user.member.skills.values_list('id', flat=True))
-        for job in Job.objects.all():
-            skills_set = set(job.skills.values_list('id', flat=True))
-            if skills_set.issubset(member_skills_set):
-                jobs.append(job)
-        return render(request, 'myapp/homepage.html', context={'jobs': jobs})
+        if not request.user.is_authenticated:
+            return redirect('myapp:login')
+        
+        if hasattr(request.user,'member'):
+            jobs = []
+            member_skills_set = set(request.user.member.skills.values_list('id', flat=True))
+            for job in Job.objects.all():
+                skills_set = set(job.skills.values_list('id', flat=True))
+                if skills_set.issubset(member_skills_set):
+                    jobs.append(job)
+            return render(request, 'myapp/homepage.html', context={'jobs': jobs})
+        else:
+            return redirect('myapp:companyhomepage')
 
 
 class MemberSkillView(View):
@@ -111,7 +117,7 @@ class EducationCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ConnectionCreateView(CreateView):
+class ConnectionCreateView(View):
     def get(self, request):
         return render(request, 'myapp/makeconnection.html', context={'form': MakeConnections(instance=request.user.member)})
     
@@ -123,6 +129,7 @@ class ConnectionCreateView(CreateView):
             return redirect('myapp:homepage')
         return render(request, 'myapp/makeconnection.html', context={'form':form})
 
+
 class ConnectionConfirmView(View):
     def get(self, request):
         connection_list = Connection.objects.filter(receiver=request.user.member,status='pending')
@@ -131,6 +138,7 @@ class ConnectionConfirmView(View):
             'connection_list': connection_list
         }
         return render(request, 'myapp/viewconnection.html', context)
+
 
 def connect(request, connection_id=id):
     connected = Connection.objects.filter(sender_id=connection_id, receiver_id=request.user.member)
@@ -150,6 +158,7 @@ class UpdateProfileView(View):
             return redirect('myapp:homepage')
         return render(request, 'myapp/updatemember.html', context={'form':form})
 
+
 class UpdateCompanyView(View):
     def get(self, request):
         return render(request, 'myapp/updatecompany.html', context={'form': AddCompanyForm(instance=request.user.company )})
@@ -164,5 +173,27 @@ class UpdateCompanyView(View):
 
 
 class EndorsementView(View):
+    def get(self, request, member_id):
+        return render(request, 'myapp/endorseskill.html', context={'form': AddEndorsementForm(member_id=member_id, endorser=request.user.member)})
+    
+    def post(self, request, member_id):
+        form = AddEndorsementForm(request.POST, member_id=member_id, endorser=request.user.member)
+        form.instance.member = Member.objects.get(id=member_id)
+        form.instance.endorsed_by = request.user.member
+        if form.is_valid():
+            form.save()
+            return redirect('myapp:homepage')
+        return render(request, 'myapp/endorseskill.html', context={'form': form})
+
+
+class DisplayConnections(View):
     def get(self, request):
-        return render(request, 'myapp/endorseskill.html', context={'form': AddEndorsementForm(member=request.user.member)})
+        context = {
+            'form': ConnectionViewForm(instance=request.user.member),
+            'connected_members' : Connection.objects.filter((Q(receiver=request.user.member) | Q(sender=request.user.member)), status='connected'),
+        }
+        return render(request, 'myapp/connected.html', context=context)
+
+class CompanyHomePage(View):
+    def get(self, request):
+        return render(request, 'myapp/companyhomepage.html')
