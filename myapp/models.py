@@ -27,7 +27,6 @@ class Company(models.Model):
 class Skill(models.Model):
     title = models.CharField(max_length=200, unique=True)
 
-
     def __str__(self):
         return self.title
 
@@ -70,7 +69,6 @@ class MemberEducation(models.Model):
     end_date = models.DateField()
 
 
-
 class Connection(models.Model):
     STATUS_CHOICES = (
         ('Pending', 'Pending'),
@@ -82,7 +80,6 @@ class Connection(models.Model):
 
     def __str__(self):
         return f'Sender: {self.sender}, Receiver: {self.receiver}'
-
 
 
 class PositionVersion(models.Model):
@@ -97,6 +94,7 @@ class Endorsment(models.Model):
 
     def __str__(self):
         return f'{self.endorse} endorse {self.endorsed} skill'
+
 
 class Job(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)

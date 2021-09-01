@@ -44,6 +44,7 @@ class AddMemberForm(ModelForm):
             'birth_date': DateInput()
          }
 
+
 class AddCompanyForm(ModelForm):
     class Meta:
         model = Company
@@ -117,6 +118,7 @@ class AddEndorsementForm(ModelForm):
         if member_id and endorser:
             member = Member.objects.get(id=member_id)
             self.fields['skill'].queryset = member.skills.exclude(id__in=endorser.endorsed_skills.values_list('skill_id', flat=True))
+
 
 class ConnectionViewForm(ModelForm):
     class Meta:

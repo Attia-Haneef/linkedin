@@ -127,6 +127,7 @@ class ConnectionCreateView(View):
             return redirect('myapp:homepage')
         return render(request, 'myapp/makeconnection.html', context={'form':form})
 
+
 class ConnectionConfirmView(View):
     def get(self, request):
         connection_list = Connection.objects.filter(receiver=request.user.member,status='pending')
@@ -135,6 +136,7 @@ class ConnectionConfirmView(View):
             'connection_list': connection_list
         }
         return render(request, 'myapp/viewconnection.html', context)
+
 
 def connect(request, connection_id=id):
     connected = Connection.objects.filter(sender_id=connection_id, receiver_id=request.user.member)
@@ -153,6 +155,7 @@ class UpdateProfileView(View):
             messages.success(request, f'Updated {request.user.member} Profile successfully')
             return redirect('myapp:homepage')
         return render(request, 'myapp/updatemember.html', context={'form':form})
+
 
 class UpdateCompanyView(View):
     def get(self, request):

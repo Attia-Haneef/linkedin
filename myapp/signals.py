@@ -2,7 +2,6 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from .models import Member
 
-
 @receiver(pre_save, sender=Member)
 def create_version(sender, instance, **kwargs):
     print('me hun signal')
