@@ -18,5 +18,6 @@ urlpatterns = [
     path('confirmconnection', views.ConnectionConfirmView.as_view(), name='confirmconnection'),
     path('connected/<int:connection_id>', views.connect, name='connected'),
     path('endorseskill/<int:member_id>', views.EndorsementView.as_view(), name='endorseskill'),
-    path('viewconnections', views.DisplayConnections.as_view(), name='viewconnections')
+    path('viewconnections', views.DisplayConnections.as_view(), name='viewconnections'),
+    path('companyhomepage', views.CompanyHomePage.as_view(), name='companyhomepage')
 ]

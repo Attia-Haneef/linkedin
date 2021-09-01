@@ -71,15 +71,17 @@ class HomeView(View):
     def get(self, request):
         if not request.user.is_authenticated:
             return redirect('myapp:login')
-
-        jobs = []
-        member_skills_set = set(request.user.member.skills.values_list('id', flat=True))
-        print(member_skills_set)
-        for job in Job.objects.all():
-            skills_set = set(job.skills.values_list('id', flat=True))
-            if skills_set.issubset(member_skills_set):
-                jobs.append(job)
-        return render(request, 'myapp/homepage.html', context={'jobs': jobs})
+        
+        if hasattr(request.user,'member'):
+            jobs = []
+            member_skills_set = set(request.user.member.skills.values_list('id', flat=True))
+            for job in Job.objects.all():
+                skills_set = set(job.skills.values_list('id', flat=True))
+                if skills_set.issubset(member_skills_set):
+                    jobs.append(job)
+            return render(request, 'myapp/homepage.html', context={'jobs': jobs})
+        else:
+            return redirect('myapp:companyhomepage')
 
 
 class MemberSkillView(View):
@@ -191,3 +193,7 @@ class DisplayConnections(View):
             'connected_members' : Connection.objects.filter((Q(receiver=request.user.member) | Q(sender=request.user.member)), status='connected'),
         }
         return render(request, 'myapp/connected.html', context=context)
+
+class CompanyHomePage(View):
+    def get(self, request):
+        return render(request, 'myapp/companyhomepage.html')
