@@ -1,6 +1,5 @@
-from django.contrib import auth
 from django.db import models
-from django.contrib.auth.models import AbstractUser, User
+from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 
 # Create your models here.
@@ -77,9 +76,13 @@ class Connection(models.Model):
         ('Pending', 'Pending'),
         ('Connected','Connected'),
     )
-    sender = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='sender')
-    receiver = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='receiver')
+    sender = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='senders')
+    receiver = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='receivers')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+
+    def __str__(self):
+        return f'Sender: {self.sender}, Receiver: {self.receiver}'
+
 
 
 class PositionVersion(models.Model):

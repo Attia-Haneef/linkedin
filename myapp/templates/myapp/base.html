@@ -18,10 +18,6 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-          <li class="nav-item active">
-            <a class="nav-link" href="{% url 'myapp:homepage' %}">Home</a>
-          </li>
-
           {% if not user.is_authenticated %}
           <li class="nav-item active">
             <a class="nav-link" href="{% url 'myapp:login' %}">Login</a>
@@ -31,6 +27,9 @@
             <a class="nav-link" href="{% url 'myapp:register' %}">Register</a>
           </li>
           {% else %}
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'myapp:homepage' %}">Home</a>
+          </li>
           {% if user.member %}
           <li class="nav-item active">
             <a class="nav-link" href="{% url 'myapp:addskill' %}">Update Skills</a>
@@ -45,10 +44,10 @@
             <a class="nav-link" href="{% url 'myapp:confirmconnection' %}">Connection Requests</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="{% url 'myapp:updateprofile' %}">Update Member</a>
+            <a class="nav-link" href="{% url 'myapp:viewconnections' %}">Connections</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="{% url 'myapp:endorseskill' %}">Endorse Skill</a>
+            <a class="nav-link" href="{% url 'myapp:updateprofile' %}">Update Member</a>
           </li>
           {% endif %}
           {% if user.company %}
